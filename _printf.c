@@ -1,53 +1,50 @@
-#include <stdlib.h>
-#include <stdarg.h>
 #include "main.h"
+
 /**
- * _printf - print anything
- * @format: arguments
- * Return: number of characters printed
+ * _printf - formatted output conversion and print data.
+ * @format: input string.
+ *
+ * Return: number of chars printed.
  */
+
 int _printf(const char *format, ...)
 {
-	va_list arguments;
-	const char *p;
-	int num = 0;
+	int i = 0, j = 0, buff_count = 0, prev_buff_count = 0;
+	char buffer[2000];
+	va_list arg;
+	call_t container[] = {
+		{'c', parse_char}, {'s', parse_string}, {'i', parse_int}, {'d', parse_int},
+		{'%', parse_perc}, {'b', parse_binary}, {'o', parse_oct}, {'x', parse_hex},
+		{'u', parse_uint}, {'\0', NULL}
+	};
 
-	if (format == NULL)
+	if (!format)
 		return (-1);
-	va_start(arguments, format);
-	for (p = format; *p; p++)
+	va_start(arg, format);
+	while (format && format[i] != '\0')
 	{
-		if (*p == '%' && *p + 1 == '%')
+		if (format[i] == '%')
 		{
-			_putchar(*p), num++;
-			continue;
-		}
-		else if (*p == '%' && *p + 1 != '%')
-		{
-			switch (*++p)
+			i++, prev_buff_count = buff_count;
+			for (j = 0; container[j].t != '\0'; j++)
 			{
-				case 's':
-					num += fun_string(arguments);
+				if (format[i] == '\0')
 					break;
-				case 'c':
-					num += fun_character(arguments);
+				if (format[i] == container[j].t)
+				{
+					buff_count = container[j].f(buffer, arg, buff_count);
 					break;
-				case '%':
-					_putchar('%'), num++;
-					break;
-				case '\0':
-					return (-1);
-				case 'i':
-				case 'd':
-					num += fun_integer(arguments);
-					break;
-				default:
-					_putchar('%'), _putchar(*p), num += 2;
+				}
 			}
+			if (buff_count == prev_buff_count && format[i])
+				i--, buffer[buff_count] = format[i], buff_count++;
 		}
 		else
-			_putchar(*p), num++;
+			buffer[buff_count] = format[i], buff_count++;
+		i++;
 	}
-va_end(arguments);
-return (num);
+	va_end(arg);
+	buffer[buff_count] = '\0';
+	print_buff(buffer, buff_count);
+	return (buff_count);
 }
