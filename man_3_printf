@@ -1,77 +1,102 @@
-.\" Manpage for _printf.
-.TH _printf 3 "18 April 2022" "1.0" "User commands for _printf"
+.TH man 3 "17 April 2022" "ALX SCHOOL" "_PRINTF"
 .SH NAME
- _printf - format and print data.
+.B _printf
+- formatted output conversion
 .SH SYNOPSIS
-.nf
-.BI printf FORMAT [ARGUMENT]...
-.PP
-.BI "#include 'main.h'"
-.BI "#include <stdarg.h>"
-.BI "#include <unistd.h>"
-.BI "#include <stdlib.h>"
-.BI "#include <stdio.h>"
-.BI "#include <limits.h>"
-.PP
-.BI "int _printf(const char *format, ...);"
-.BI "buff_append(char *buff_dest, va_list arg, unsigned int buff_count, char (*parser)(va_list));"
-.BI "print_buff(char *buff, unsigned int nbuff);"
-.BI "str_len(char *s);"
-.BI "*_strcpy(char *dest, char *src);"
-.BI "parse_char(va_list arg);"
-.BI "int parse_string(char *buff_dest, va_list arg, int buff_count);"
-.BI "int parse_int(char *string, va_list list, int buff_count);"
-.BI "int parse_perc(char *buff_dest, va_list arg, int buff_count);"
-.BI "int parse_binary(char *buff_dest, va_list arg, int buff_count);"
-.PP
+.B #include \(dqholberton.h\(dq
+.sp
+.B int _printf(const char *
+.I format
+.B , ...);
 .SH DESCRIPTION
-The function _printf() prints ARGUMENTS(s) according to format, or execute according to various Option.
-.PP
-.SH RETURN VALUE
-Returns the number of all the characters printed, excluding the NULL byte used to end output to strings.
-.SH Format String Format
-The format string is a character string, which contains two types of directives: ordinary characters which are coppied to the output stream; and conversion specifiers. Each conversion specification is introduced by the character %, and ends with a conversion specifier.
-.SH Conversion Specifiers
-This are the characters that specifies the type of conversion to be applied. The conversion specifiers and their meanings are:
-.TP
+The function _printf is a variadic function that produces a string according to a
+.I format
+and prints it to the standard output, much like the C standard library function printf. It can receive a variable number of arguments.
+This function has been created in the context of one year project for ALX School.
+.sp
+.B Return value
+.sp
+On success, _printf returns the number of characters printed. If
+.I format
+is NULL or if the functions encounters any errors, it returns -1.
+.sp
+.B Format of the format string
+.sp
+The format string can contain any characters, just like a regular string, in double quotes, which will be printed as is. For example, _printf(\(dqHello\(dq) will print: Hello.
+However, this format string can contain
+.I conversion specifiers.
+These start with a %, and are followed with a character (see
+.I conversion specifiers
+). Special characters like a new line are escaped, for example _printf(\(dq\\n\(dq) will print a new line.
+.sp
+.B Conversion specifiers
+.sp
+These are the characters that specify the type of the variable that needs to be printed. The variables to be printed are separated from the format string with a comma. Each variable passed to _printf need to have a conversion specifier.
+.sp
+.B i, d
+- Both these specifiers are for
+.I int
+arguments. They convert the variable to a decimal number, positive or negative.
+.sp
 .B c
-.R The \fIint\fR argument is converted to a char, and the result is printed.
-.TP
+- Prints a
+.I single character.
+.sp
 .B s
-.R The \fIconst char *\fR is a pointer to an array of characters, that converts the corresponding argument to a character string.
-.TP
-.B d, i
-.R The \fIint\fR argument is converted to signed decimal notation.
-.TP
-.B %, %%
-.R If only the \fI%\fR character is written no argument is converted. The complete conversion specification is \fI%%\fR, that returns the actual sign if there in front.
-.PP
-.SH NOTES
-.R The \fB_printf()\fR is a project collaboration between \fBAdisa Abdulhakeem\fR and \fBAdeyeye Ololade Ifeoluwa\fR, Students studing Software Engineering at \fBALX School\fR.
-.SH BUGS
-.R In process
-.PP
-.SH EXAMPLE
-.R To print the the string \fBHello ALX!\fR and its length in decimal.
-
-#include "main.h"
-
-int main(void)
-
-{
-
-	int length;
-
-	_printf("%s\n", "Hello, ALX!")
-
-	_printf("Hello ALX! contains %d characters\n", length);
-
-	length = _printf("Hello Holberton!");
-
-	return (0);
-
-}
+- Prints an entire
+.I string.
+.sp
+.B u
+- Prints an
+.I unsigned int.
+.sp
+.B x, X
+- Respecively print a number in lowercase and uppercase
+.I hexadecimal
+base.
+.sp
+.B o, b
+- Respectively print a number in
+.I octal
+and
+.I binary
+base.
+.sp
+.B %
+- Acts like an escape for the character %. To print \(dq%\(dq, the format string should contain \(dq%%\(dq.
+.sp
+.B r, R
+- Respectively print a string in reverse and in ROT13 encryption.
+.sp
+.B S
+- Prints a string, but non-printable characters are printed this way: \\x, followed by the ASCII code value in uppercase hexadecimal.
+.sp
+.B p
+- Prints an address, given by a pointer variable
+.sp
+.B Flag characters for conversion specifiers
+.sp
+.B +
+- Prints a plus sign in front of positive signed integers and a minus sign in front of negative signed integers.
+ + overrides a space when both flags are given.
+.sp
+.B ' '
+- Prints a space in front of signed integers.
+.sp
+.B #
+- Modifier for unsigned conversions. For x, prepends \(dq0x\(dq, and for X, prepends \(dq0X\(dq. For o, if the converted number doesn't already begin with a 0, prepends a 0.
+.sp
 .SH SEE ALSO
-.R printf(3)
+.I printf(3)
+.I _putchar.c
+.SH NOTES
+_printf uses a custom character printing function called _putchar, that uses the system call write(). 
+_putchar uses a static buffer of 1024 bytes and a static incrementing variable. 
+That way, everytime _putchar is called inside _printf, the character is stored inside the buffer and the function moves to the next character, 
+until _printf calls _putchar(-1), which \(dqflushes\(dq the buffer and resets the incrementing variable to 0. 
+That way, _putchar only needs to call write one time, passing to it the whole buffer and the number of bytes in it, which is given by the value of the incrementing variable.
+.sp
+.SH BUGS
+_printf does not take care of length and precision modifiers yet. For example, _printf(\(dq%hx\(dq) will not produce the same output as the call to the standard library printf.
 .SH AUTHORS
-Written by \fBAdisa Abdulhakeem\fR and \fBAdeyeye Ololade Ifeoluwa\fR.
+Adisa Abdulhakeem and Adeyey Ololade
